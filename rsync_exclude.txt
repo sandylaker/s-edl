@@ -1,0 +1,15 @@
+.git/
+.idea/
+.vscode/
+.claude/
+.prompts/
+.cursor/
+.DS_Store
+
+*.egg-info/
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+
+data
+workdirs
