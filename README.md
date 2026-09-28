@@ -1,18 +1,3 @@
-# pyproject-template
-Python project template
+# [S-EDL: Eliciting Self-Evidence from Sequence Likelihoods for Semantic Calibration of LLMs (NeurIPS 2026)](https://openreview.net/forum?id=ub8LNj7RrR#discussion)
 
-## Things to modify when initialization
-
-* Project folder name (currently "pyproject-template")
-* package folder name (currently "todo")
-* `setup.cfg`
-  * `[metadata]` `name`
-  * `[options]` `install_requires` (add your dependencies). For more information please refer to [setuptools](https://setuptools.pypa.io/en/latest/userguide/dependency_management.html)
-  * `[isort]` `known_first_party` (change to your package name), `know_third_party` (add your dependencies' names). If you don't wanna use isort you can ignore this step.
-* (Only for Neovim) `mkdir .nvim/ && mv dap.lua .nvim/`
-
-## Installation
-Install your package in editable mode via `pip install -e .` (do no forget the ".").
-
-## Optional
-Install pre-commit hooks via `pre-commit install`.
+Code coming soon. Expected release date: around mid of October 2026
