@@ -12,18 +12,28 @@ __pycache__/
 .vscode/
 .DS_store
 .nvim/
+.claude/
+.prompts/
+.cursor/
+.codex/
+uv.lock
+
+# custom markdown files
+CLAUDE.md
 
 # # pretrained models
 pretrained/
 *.ckpt
 *.pth
 *.pt
+unsloth_compiled_cache/
 
 # working directories
 workdirs
 
 # data directory
-data
+data/*
+!data/*.jsonl
 
 # rsync
 rsync_exclude.txt

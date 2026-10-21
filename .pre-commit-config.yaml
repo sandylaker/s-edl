@@ -1,4 +1,4 @@
-exclude: ^workdirs/
+exclude: ^(workdirs/|configs/lm_eval/)
 repos:
   - repo: https://github.com/pycqa/flake8
     rev: 7.3.0

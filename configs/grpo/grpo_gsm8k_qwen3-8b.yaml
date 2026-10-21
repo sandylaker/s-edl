@@ -1,0 +1,30 @@
+_base_: ['../baseline/baseline_gsm8k_qwen3-8b.yaml']
+
+training:
+  # Override completely — baseline training args don't apply to GRPO
+  _delete_: true
+  # Training
+  max_steps: 937
+  per_device_train_batch_size: 8
+  num_generations: 8
+  gradient_accumulation_steps: 4
+  learning_rate: 0.00001
+  warmup_ratio: 0.05
+  lr_scheduler_type: cosine
+  max_grad_norm: 1.0
+  logging_steps: 1
+  save_strategy: 'no'
+  bf16: true
+  gradient_checkpointing: true
+  optim: adamw_torch
+  # GRPO generation (vLLM server mode — start server separately with trl vllm-serve)
+  use_vllm: true
+  vllm_mode: server
+  max_completion_length: 256
+  mask_truncated_completions: true
+  temperature: 1.0
+  top_p: 0.9
+  # GRPO loss
+  loss_type: dr_grpo
+  # beta: 0.0
+  scale_rewards: group

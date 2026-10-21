@@ -1,0 +1,69 @@
+data:
+  train:
+    path: data/math_original_cot_train.jsonl
+  eval:
+    dataset_name: HuggingFaceH4/MATH-500
+    dataset_config: default
+    split: test
+  prompt_builder:
+    type: MATHPromptBuilder
+    prompt_type: cot
+    max_few_shot: 0
+
+model:
+  model_name: Qwen/Qwen3-8B-Base
+  max_seq_length: 4096
+  dtype: bfloat16
+  load_in_4bit: false
+  gradient_checkpointing: true
+
+lora:
+  r: 16
+  lora_alpha: 32
+  lora_dropout: 0.0
+  target_modules:
+    - q_proj
+    - k_proj
+    - v_proj
+    - o_proj
+    - gate_proj
+    - up_proj
+    - down_proj
+  bias: none
+
+training:
+  num_train_epochs: 3
+  per_device_train_batch_size: 16
+  gradient_accumulation_steps: 1
+  max_grad_norm: 1.0
+  learning_rate: 0.0002
+  warmup_ratio: 0.06
+  logging_steps: 1
+  lr_scheduler_type: cosine
+  save_strategy: 'no'
+  bf16: true
+  optim: adamw_torch
+
+# Evaluation settings
+vllm_engine:
+  max_num_seqs: 128
+  gpu_memory_utilization: 0.85
+
+vllm_sampling:
+  n: 50
+  temperature: 0.8
+  top_p: 0.9
+  max_tokens: 2048
+  stop:
+    - "<|im_end|>"
+    - "<|endoftext|>"
+
+metrics:
+  ece_bins:
+    - 10
+    - 15
+    - 20
+  k_values:
+    - 1
+    - 5
+    - 10

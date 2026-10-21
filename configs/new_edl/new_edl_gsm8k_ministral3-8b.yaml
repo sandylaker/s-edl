@@ -1,0 +1,37 @@
+_base_: ['../baseline/baseline_gsm8k_ministral3-8b.yaml']
+
+training:
+  # Explicitly match the corresponding Dr.GRPO optimization budget.
+  _delete_: true
+  max_steps: 937
+  per_device_train_batch_size: 8
+  num_generations: 8
+  gradient_accumulation_steps: 4
+  learning_rate: 0.00001
+  warmup_ratio: 0.05
+  lr_scheduler_type: cosine
+  max_grad_norm: 1.0
+  logging_steps: 1
+  save_strategy: 'no'
+  remove_unused_columns: false
+  bf16: true
+  gradient_checkpointing: true
+  optim: adamw_torch
+  use_vllm: true
+  vllm_mode: server
+  max_completion_length: 256
+  mask_truncated_completions: true
+  temperature: 1.0
+  top_p: 0.9
+  edl_beta: 1.2
+  edl_reward_scale: 10.0
+  edl_gt_pseudo_logprob_penalty: 4.605
+  edl_advantage_clip: null
+  edl_aux_gt_enabled: false
+  edl_aux_gt_loss_weight: 1.0
+  edl_aux_gt_normalization: row_matched
+  edl_missing_gt_strategy: skip
+  loss_type: grpo
+  scale_rewards: none
+  vllm_importance_sampling_correction: false
+  vllm_importance_sampling_mode: sequence_mask

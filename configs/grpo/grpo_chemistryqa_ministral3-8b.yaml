@@ -1,0 +1,37 @@
+_base_: ['../baseline/baseline_chemistryqa_ministral3-8b.yaml']
+
+training:
+  # Override completely — baseline training args don't apply to GRPO
+  _delete_: true
+  # Training
+  max_steps: 383
+  per_device_train_batch_size: 4
+  num_generations: 8
+  gradient_accumulation_steps: 4
+  learning_rate: 0.00001
+  warmup_ratio: 0.05
+  lr_scheduler_type: cosine
+  max_grad_norm: 1.0
+  logging_steps: 1
+  save_strategy: 'no'
+  bf16: true
+  gradient_checkpointing: true
+  optim: adamw_torch
+  # GRPO generation (vLLM server mode — start server separately with trl vllm-serve)
+  use_vllm: true
+  vllm_mode: server
+  max_completion_length: 2048
+  mask_truncated_completions: true
+  temperature: 1.0
+  top_p: 0.9
+  # GRPO loss
+  loss_type: dr_grpo
+  scale_rewards: group
+
+# Use LLM judge for reward (instead of math_verify)
+reward_type: llm_judge
+
+# Override judge_engine: share GPU 1 with vLLM server
+judge_engine:
+  cuda_devices: "1"
+  gpu_memory_utilization: 0.4

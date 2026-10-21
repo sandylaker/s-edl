@@ -1,0 +1,83 @@
+data:
+  train:
+    path: data/formulareasoning_ultra_short_cot_train.jsonl
+  eval:
+    path: data/formulareasoning_ultra_short_cot_test.jsonl
+    max_samples: 500
+  prompt_builder:
+    type: FormulaReasoningPromptBuilder
+    prompt_type: cot
+    max_few_shot: 0
+
+model:
+  model_name: XiaomiMiMo/MiMo-7B-Base
+  max_seq_length: 4096
+  dtype: bfloat16
+  load_in_4bit: false
+  gradient_checkpointing: true
+
+lora:
+  r: 16
+  lora_alpha: 32
+  lora_dropout: 0.0
+  target_modules:
+    - q_proj
+    - k_proj
+    - v_proj
+    - o_proj
+    - gate_proj
+    - up_proj
+    - down_proj
+  bias: none
+
+training:
+  num_train_epochs: 3
+  per_device_train_batch_size: 8
+  gradient_accumulation_steps: 1
+  max_grad_norm: 1.0
+  learning_rate: 0.0002
+  warmup_ratio: 0.06
+  logging_steps: 1
+  lr_scheduler_type: cosine
+  save_strategy: 'no'
+  bf16: true
+  optim: adamw_torch
+
+# LLM judge for clustering (physics answers include units)
+judge_engine:
+  model_name: openai/gpt-oss-20b
+  cuda_devices: "0"
+  gpu_memory_utilization: 0.85
+  max_model_len: 4096
+  max_num_seqs: 64
+  reasoning_effort: low
+
+judge_sampling:
+  temperature: 0.6
+  top_p: 1.0
+  max_tokens: 512
+
+# model_type 'mimo' is custom — trust_remote_code required for vLLM
+vllm_engine:
+  max_num_seqs: 128
+  gpu_memory_utilization: 0.85
+  trust_remote_code: true
+
+vllm_sampling:
+  n: 50
+  temperature: 0.7
+  top_p: 0.9
+  max_tokens: 2048
+  stop:
+    - "<|im_end|>"
+    - "<|endoftext|>"
+
+metrics:
+  ece_bins:
+    - 10
+    - 15
+    - 20
+  k_values:
+    - 1
+    - 5
+    - 10

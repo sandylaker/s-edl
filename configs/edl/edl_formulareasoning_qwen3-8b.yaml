@@ -1,0 +1,42 @@
+_base_: ['../baseline/baseline_formulareasoning_qwen3-8b.yaml']
+
+training:
+  per_device_train_batch_size: 4
+  gradient_accumulation_steps: 1
+  num_train_epochs: 1
+  edl_beta: 1.2
+  edl_weight: 5.0
+  edl_weight_start_step: 0.5
+  edl_weight_warmup_steps: 0.02
+  edl_gt_pseudo_logprob_penalty: 4.605
+  edl_logprob_batch_size: 4
+  edl_add_special_tokens: false
+  edl_sampling:
+    n: 8
+    temperature: 1.0
+    top_p: 0.9
+    max_tokens: 768
+    logprobs: 1
+    stop:
+    - "<|im_end|>"
+    - "<|endoftext|>"
+
+  vllm_base_url: http://localhost:8000
+  vllm_api_mode: openai
+  vllm_generate_endpoint: /v1/completions
+  vllm_load_lora_endpoint: /v1/load_lora_adapter
+  vllm_unload_lora_endpoint: /v1/unload_lora_adapter
+  vllm_force_reload_lora: true
+  vllm_timeout: 600.0
+  vllm_importance_sampling: false
+  vllm_importance_sampling_mode: sequence_truncate
+  vllm_importance_sampling_cap: 2.0
+
+  lora_sync: true
+  lora_adapter_dir: /dev/shm/s_edl_adapter
+  lora_name: edl_adapter
+
+# Override judge_engine for training: share GPU 1 with vLLM server
+judge_engine:
+  cuda_devices: "1"
+  gpu_memory_utilization: 0.4

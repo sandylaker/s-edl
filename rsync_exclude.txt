@@ -4,12 +4,19 @@
 .claude/
 .prompts/
 .cursor/
+.codex/
 .DS_Store
+.venv/
+
+.env
+CLAUDE.md
+todos.md
 
 *.egg-info/
 __pycache__/
 .pytest_cache/
 .mypy_cache/
 
-data
+data/*
+!data/*.jsonl
 workdirs
