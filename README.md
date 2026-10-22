@@ -31,6 +31,10 @@ scripts/old_edl.sh --model qwen3-8b --dataset gsm8k
 | `--vllm-gpu` | GPU for the vLLM rollout server and the LLM judge | `1` |
 | `--vllm-port` | vLLM server port | `8000` |
 
+All three models are pretrained base models, not their instruction-tuned versions: `qwen3-8b` is
+`Qwen/Qwen3-8B-Base`, `ministral3-8b` is `Aratako/Ministral-3-8B-Base-2512-TextOnly`, and `mimo-7b` is
+`XiaomiMiMo/MiMo-7B-Base`.
+
 Run `scripts/old_edl.sh --help` for details, or add `--dry-run` to print the resolved config, paths, and options
 without starting anything.
 
