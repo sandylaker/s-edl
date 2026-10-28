@@ -30,7 +30,7 @@ training:
   edl_aux_gt_enabled: false
   edl_aux_gt_loss_weight: 1.0
   edl_aux_gt_normalization: row_matched
-  edl_missing_gt_strategy: skip
+  edl_missing_gt_strategy: pseudo
   loss_type: grpo
   scale_rewards: none
   vllm_importance_sampling_correction: false

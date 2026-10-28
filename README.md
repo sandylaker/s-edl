@@ -8,7 +8,7 @@ pip install -e ".[dev]"
 pre-commit install  # optional
 ```
 
-See [ENV_SETUP.md](ENV_SETUP.md) for model-specific setup notes (Ministral3-8B, MiMo-7B).
+See [ENV_SETUP.md](docs/ENV_SETUP.md) for model-specific setup notes (Ministral3-8B, MiMo-7B).
 
 ## Running EDL Experiments
 
@@ -68,15 +68,18 @@ scripts/old_edl.sh --model mimo-7b --dataset math
 
 Step 1 saves the checkpoint to `workdirs/<model>/<dataset>/baseline/e-1/train/lora_checkpoint`, which is where the EDL script looks by default. To continue from a different SFT checkpoint, pass its path with `--sft-checkpoint`. The EDL script stops with an error if the SFT checkpoint does not exist.
 
+### Implement S-EDL with trl.GRPOTrainer
+As discussed in the Appendix A.5 of the paper, S-EDL can also be viewed as a GRPO-like update. Therefore, we can implement S-EDL on top of `trl.GRPOTrainer`, which improves data efficiency and GPU utilization. See [New EDL Results](docs/NEW_EDL.md) for details.
+
 ## Citation
 
 ```bibtex
 @inproceedings{
-li2026sedl,
-title={S-{EDL}: Eliciting Self-Evidence from Sequence Likelihoods for Semantic Calibration of {LLM}s},
-author={Yawei Li and Jiazheng Li and David R{\"u}gamer and Bernd Bischl and Yulan He and Mina Rezaei},
-booktitle={The Fortieth Annual Conference on Neural Information Processing Systems},
-year={2026},
-url={https://openreview.net/forum?id=ub8LNj7RrR}
+  li2026sedl,
+  title={S-{EDL}: Eliciting Self-Evidence from Sequence Likelihoods for Semantic Calibration of {LLM}s},
+  author={Yawei Li and Jiazheng Li and David R{\"u}gamer and Bernd Bischl and Yulan He and Mina Rezaei},
+  booktitle={The Fortieth Annual Conference on Neural Information Processing Systems},
+  year={2026},
+  url={https://openreview.net/forum?id=ub8LNj7RrR}
 }
 ```

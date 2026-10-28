@@ -15,7 +15,7 @@ VLLM_IS_MODE="sequence_mask"
 AUX_GT=false
 AUX_GT_LOSS_WEIGHT=1.0
 AUX_GT_NORMALIZATION="row_matched"
-MISSING_GT_STRATEGY="skip"
+MISSING_GT_STRATEGY=""
 PSEUDO_GT_LOGPROB_PENALTY=4.605
 SFT_CHECKPOINT_OVERRIDE=""
 TRAIN_GPU=0
@@ -48,7 +48,7 @@ NewEDL settings:
   --aux-gt-loss-weight VALUE     Auxiliary GT loss multiplier. Default: 1.0
   --aux-gt-normalization VALUE   row_matched: scale by active-row fraction to match sampled-row weighting;
                                  active_mean: average only active auxiliary rows (legacy). Default: row_matched
-  --missing-gt-strategy VALUE    pseudo or skip. Default: skip
+  --missing-gt-strategy VALUE    pseudo or skip. Default: training.edl_missing_gt_strategy in the config
   --pseudo-gt-penalty VALUE      Penalty on pseudo-GT mean logprob. Default: 4.605
   --sft-checkpoint PATH          SFT LoRA checkpoint to continue from, e.g. one trained by
                                  scripts/baseline_sft.sh --epochs 1. Default:
@@ -70,7 +70,7 @@ Runtime:
   -h, --help                     Show this help.
 
 Best-known NewEDL recipe (the defaults):
-  beta=1.2, scale=10.0, loss_type=grpo, vLLM IS off, aux-GT off, missing-GT skip.
+  beta=1.2, scale=10.0, loss_type=grpo, vLLM IS off, aux-GT off, missing-GT from the config.
 
 Examples:
   scripts/new_edl.sh --model ministral3-8b --dataset chemistryqa
@@ -190,10 +190,6 @@ for BOOL_VALUE in "${VLLM_IS}" "${AUX_GT}"; do
         exit 1
     fi
 done
-if [[ "${MISSING_GT_STRATEGY}" != "pseudo" && "${MISSING_GT_STRATEGY}" != "skip" ]]; then
-    echo "--missing-gt-strategy must be pseudo or skip."
-    exit 1
-fi
 if [[ "${AUX_GT_NORMALIZATION}" != "row_matched" && "${AUX_GT_NORMALIZATION}" != "active_mean" ]]; then
     echo "--aux-gt-normalization must be row_matched or active_mean."
     exit 1
@@ -287,6 +283,22 @@ else
     AUX_GT_LABEL="off"
 fi
 
+CONFIG="configs/new_edl/new_edl_${DATASET}_${MODEL_KEY}.yaml"
+if [ ! -f "${CONFIG}" ]; then
+    echo "NewEDL config does not exist: ${CONFIG}"
+    exit 1
+fi
+
+if [ -z "${MISSING_GT_STRATEGY}" ]; then
+    MISSING_GT_STRATEGY=$(python -c \
+        'import sys; from mmengine import Config; print(Config.fromfile(sys.argv[1]).training.edl_missing_gt_strategy)' \
+        "${CONFIG}")
+fi
+if [[ "${MISSING_GT_STRATEGY}" != "pseudo" && "${MISSING_GT_STRATEGY}" != "skip" ]]; then
+    echo "--missing-gt-strategy must be pseudo or skip."
+    exit 1
+fi
+
 TRAIN_TEMP_SUFFIX=""
 if [ -n "${TRAIN_TEMP}" ]; then
     TRAIN_TEMP_SUFFIX="_t-${TRAIN_TEMP}"
@@ -297,12 +309,6 @@ ABLATION_SUFFIX+="_aux-gt-${AUX_GT_LABEL}"
 ABLATION_SUFFIX+="_missing-gt-${MISSING_GT_STRATEGY}"
 if [ "${MISSING_GT_STRATEGY}" = "pseudo" ] || [ "${AUX_GT}" = "true" ]; then
     ABLATION_SUFFIX+="_pseudo-penalty-${PSEUDO_GT_LOGPROB_PENALTY}"
-fi
-
-CONFIG="configs/new_edl/new_edl_${DATASET}_${MODEL_KEY}.yaml"
-if [ ! -f "${CONFIG}" ]; then
-    echo "NewEDL config does not exist: ${CONFIG}"
-    exit 1
 fi
 
 if [ -n "${SFT_CHECKPOINT_OVERRIDE}" ]; then
